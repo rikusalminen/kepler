@@ -1,0 +1,37 @@
+name:                kepler
+version:             0.1.0.0
+synopsis:            Compute orbits of celestial bodies using Kepler's laws
+description:         Elementary celestial mechanics
+homepage:            http://github.com/rikusalminen/kepler
+license:             OtherLicense
+license-file:        LICENSE
+author:              Riku Salminen
+maintainer:          riku.salminen@tkk.fi
+copyright:           Riku Salminen, 2013
+category:            Science
+build-type:          Simple
+cabal-version:       >=1.8
+
+library
+  exposed-modules: Kepler
+  -- other-modules:
+  build-depends:
+    base ==4.5.*
+
+executable kepler-test
+  main-is: Main.hs
+  build-depends:
+    base ==4.5.*
+  other-modules: Kepler
+
+test-suite OrbitTests
+  type: exitcode-stdio-1.0
+  x-uses-tf: true
+  ghc-options: -threaded
+  build-depends:
+    base ==4.5.*,
+    QuickCheck ==2.4.*,
+    test-framework >= 0.4.1,
+    test-framework-quickcheck2
+
+  main-is: Tests/OrbitTests.hs
