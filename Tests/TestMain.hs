@@ -4,6 +4,7 @@ import Test.Framework as TF (defaultMain, testGroup, Test)
 import Test.Framework.Providers.QuickCheck2 (testProperty)
 
 import Tests.OrbitTests
+import Tests.InterceptTests
 
 tests = [
     testGroup "Orbit tests" [
@@ -20,6 +21,9 @@ tests = [
         testProperty "Apsides distance and speed" apsides,
         testProperty "Nodes at equator" nodes,
         testProperty "Velocity test" velocityTest
+    ],
+    testGroup "Intercept tests" [
+        testProperty "Intercept test" interceptTest
     ]]
 
 main = defaultMain tests

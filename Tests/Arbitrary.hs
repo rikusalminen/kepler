@@ -123,3 +123,49 @@ instance Arbitrary TestTime where
                     t
 
         return $ TestTime orbit time
+
+data TestIntercept = TestIntercept (Orbit, Orbit) (Double, Double) Double
+    deriving Show
+
+instance Arbitrary TestIntercept where
+    arbitrary = do
+        (TestTime o1 t0) <- arbitrary
+
+        let (r, v) = orbitStateAtTime o1 t0
+
+        e <- frequency [
+            (10, return $ 0.0),
+            (10, return $ 1.0),
+            (40, choose (0.0, 0.5)),
+            (40, choose (1.5, 2.0))
+            ]
+
+        true <- if e < 1.0 then choose (-pi, pi) else choose (-pi/2, pi/2)
+
+        let p = mag r * (1 + e * cos true)
+        let a = p / (1 - e^2)
+
+        let mu = orbitGravitationalParameter o1
+        let v2 = if eccentricType e == Parabolic then mu * (2 / mag r) else mu * (2 / mag r - 1 / a)
+
+        let vrad = sqrt v2 * (e * sin true)
+        let vtan = sqrt v2 * (1 + e * cos true)
+
+        let (rad, pro, nor) = (unit r, unit v, unit $ r `cross` v)
+
+        reli <- frequency [
+            (5, return $ 0),
+            (5, return $ pi/2),
+            (5, return $ -pi/2),
+            (5, return $ pi),
+            (5, return $ -pi),
+            (25, choose (-pi/32, pi/32)),
+            (50, choose (-pi, pi))
+            ]
+
+        let v' = (vrad `scale` rad) `add` ((vtan * cos reli) `scale` pro) `add` ((vtan * sin reli) `scale` nor)
+
+        let (o2, _) = orbitStateToElements mu (r, v') t0
+
+        let dt = 100.0
+        return $ TestIntercept (o1, o2) (t0-dt, t0+dt) t0
