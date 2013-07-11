@@ -9,8 +9,8 @@ module Kepler.Anomalies (
     anomalies
     ) where
 
-import Kepler.MathOps (epsilon, sign)
-import Kepler.Orbit (Orbit(..), OrbitType(..), meanAnomalyAtEpoch, meanMotion, eccentricType)
+import Kepler.MathOps (epsilon, sign, angleClamp)
+import Kepler.Orbit (Orbit(..), OrbitType(..), meanAnomalyAtEpoch, meanMotion, eccentricType, orbitClosed)
 
 meanToEccentricAnomaly e mean =
     anomaly (eccentricType e)
@@ -97,7 +97,9 @@ meanToTrueAnomaly e = eccentricToTrueAnomaly e . meanToEccentricAnomaly e
 trueToMeanAnomaly e = eccentricToMeanAnomaly e . trueToEccentricAnomaly e
 
 meanAnomalyAtTime orbit t =
-    meanAnomalyAtEpoch orbit + (t - orbitEpoch orbit) * meanMotion orbit
+    if orbitClosed orbit then angleClamp m else m
+    where
+    m = meanAnomalyAtEpoch orbit + (t - orbitEpoch orbit) * meanMotion orbit
 
 anomalies elems@(Orbit _ e _ _ _ _) t =
     (mean, eccentric, true)

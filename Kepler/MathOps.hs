@@ -11,7 +11,8 @@ module Kepler.MathOps (
     unit,
     vproduct,
     sign,
-    clamp
+    clamp,
+    angleClamp
     ) where
 
 
@@ -33,3 +34,11 @@ vproduct (x, y, z) v = (dot x v, dot y v, dot z v)
 
 sign x = if x < 0 then -1 else 1
 clamp mi ma x = min ma (max x mi)
+
+angleClamp x
+    | abs x <= pi =
+        x
+    | otherwise =
+        -pi+2*pi*fract((x+pi)/(2*pi))
+    where
+    fract f = f - (fromIntegral $ floor f)
