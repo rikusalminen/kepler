@@ -1,4 +1,5 @@
 module Kepler.OrbitState (
+    orbitStateAtTime,
     orbitState,
     orbitStatePlane,
     orbitStateToElements
@@ -6,7 +7,9 @@ module Kepler.OrbitState (
 
 import Kepler.MathOps (epsilon, sub, scale, dot, cross, mag, unit, vproduct, sign, clamp)
 import Kepler.Orbit (Orbit(..), OrbitType(..), orbitMatrix, eccentricType)
-import Kepler.Anomalies (trueToEccentricAnomaly, eccentricToMeanAnomaly)
+import Kepler.Anomalies (trueToEccentricAnomaly, eccentricToMeanAnomaly, anomalies)
+
+orbitStateAtTime orbit = orbitState orbit . anomalies orbit
 
 orbitState orbit anoms =
     (vproduct matrix r, vproduct matrix v)
